@@ -2,36 +2,31 @@
 'https://plantuml.com/activity-diagram-beta
 
 start
-:ClickServlet.handleRequest();
-:new page;
-if (Page.onSecurityCheck) then (true)
-  :Page.onInit();
-  if (isForward?) then (no)
-    :Process controls;
-    if (continue processing?) then (no)
-      stop
-    endif
-
-    if (isPost?) then (yes)
-      :Page.onPost();
-    else (no)
-      :Page.onGet();
-    endif
-    :Page.onRender();
-  endif
-else (false)
+:监听接口数据过程表;
+:根据链路编码调用链路规则匹配查询服务获取链路匹配规则;
+if (预设标识是否为Y?) equals (Y) then
+group 预设规则分组{
+}
+else(N)
+group 路由匹配分组{
+}
 endif
-
-if (do redirect?) then (yes)
-  :redirect process;
-else
-  if (do forward?) then (yes)
-    :Forward request;
-  else (no)
-    :Render page template;
-  endif
-endif
-
+:组装分组单据数据基础属性;
+:落表保存接口中间表;
+group 接口中间表数据处理{
+    split
+       group 关联订单交易组单据处理{
+       }
+    split again
+       group 关联物流交易组单据处理{
+       }
+    split again
+       group 关联结算交易组单据处理{
+       }
+    end split
+    :保存各交易组单据到业务表;
+    :更新接口中间表各单据状态;
+    :更新接口数据表状态;
+}
 stop
-
 @enduml
